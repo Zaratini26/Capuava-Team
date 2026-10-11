@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capuava Team — Rainbow Six Siege | Cyber Tactical Esports</title>
+  <meta name="description" content="Capuava Team: equipe competitiva de Rainbow Six Siege. Plays tryhards, tática de mapa, stats ao vivo e rumo ao Platina.">
+  <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Custom Cyber Crosshair Cursor -->
+  <div class="cyber-cursor" id="cursor">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <div class="cursor-coords" id="cursorCoords">X:000 Y:000</div>
+  </div>
+
+  <!-- Background Canvas for Particles & Tactical Radar Sweep -->
+  <canvas id="tacticalCanvas" class="tactical-canvas"></canvas>
+
+  <!-- Ambient CRT Scanline Overlay -->
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- TOP HUD STATUS BAR -->
+  <aside class="hud-topbar" aria-label="Status HUD">
+    <div class="wrap hud-flex">
+      <div class="hud-item"><span class="hud-indicator pulse"></span> <span class="hud-lbl">SYS:</span> ONLINE <span class="hud-sep">//</span> SA-EAST (SP)</div>
+      <div class="hud-item hide-mobile"><span class="hud-lbl">TICKRATE:</span> 128 Hz <span class="hud-sep">//</span> PING: 12ms</div>
+      <div class="hud-item hide-mobile"><span class="hud-lbl">OP_STATUS:</span> PREPARANDO RANKED TRYHARD</div>
+      <div class="hud-actions">
+        <!-- Audio Synthesizer Toggle -->
+        <button class="hud-btn" id="audioToggle" title="Alternar Efeitos Sonoros Táticos (Tecla: M)">
+          <span class="hud-sound-icon" id="soundIcon">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span id="audioLabel">AUDIO: ON</span>
+        </button>
+        <!-- Theme Accent Switcher -->
+        <div class="theme-picker" title="Trocar Frequência de Cor HUD">
+          <button class="theme-dot active" data-color="cyan" title="Cyan Protocol" aria-label="Tema Cyan"></button>
+          <button class="theme-dot" data-color="orange" title="Molten Threat" aria-label="Tema Laranja"></button>
+          <button class="theme-dot" data-color="toxic" title="Bio Hazard" aria-label="Tema Verde"></button>
+          <button class="theme-dot" data-color="purple" title="Void Operative" aria-label="Tema Roxo"></button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN NAVIGATION -->
+  <header class="site-header" id="siteHeader">
+    <div class="wrap nav-container">
+      <a href="#top" class="brand-link" data-sound="blip">
+        <div class="brand-crest">
+          <span class="crest-letter">C</span>
+          <div class="crest-scan"></div>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">CAPUAVA<span class="text-accent">TEAM</span></span>
+          <span class="brand-subtitle">RAINBOW SIX SIEGE • R6S TACTICAL</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" id="navMenu">
+        <a href="#stats" class="nav-item" data-sound="blip"><span class="nav-num">01</span>STATS</a>
+        <a href="#progression" class="nav-item" data-sound="blip"><span class="nav-num">02</span>RUMO AO PLATINA</a>
+        <a href="#roster" class="nav-item" data-sound="blip"><span class="nav-num">03</span>ROSTER</a>
+        <a href="#maps" class="nav-item" data-sound="blip"><span class="nav-num">04</span>MAP POOL</a>
+        <a href="#agenda" class="nav-item" data-sound="blip"><span class="nav-num">05</span>AGENDA</a>
+        <a href="#sponsors" class="nav-item" data-sound="blip"><span class="nav-num">06</span>PATROCÍNIO</a>
+      </nav>
+
+      <div class="nav-cta-box">
+        <a href="#agenda" class="btn btn-cyber-primary" data-sound="deploy">
+          <span class="btn-glitch-layer"></span>
+          <span class="btn-content">
+            <span class="btn-icon">⚡</span> VER PRÓXIMA MATCH
+          </span>
+          <span class="corner c-tl"></span>
+          <span class="corner c-br"></span>
+        </a>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Menu Mobile">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main id="main">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="top">
+      <div class="hero-grid-mesh"></div>
+      <div class="wrap hero-wrap">
+        
+        <div class="hero-hud-frame">
+          <!-- Top badge -->
+          <div class="tactical-badge-row">
+            <div class="tactical-tag">
+              <span class="tag-ping"></span>
+              <span class="tag-txt">UBISOFT COMPETITIVE CIRCUIT</span>
+            </div>
+            <div class="tactical-tag outline">
+              <span class="tag-txt">ESQUADRÃO TÁTICO BR</span>
+            </div>
+            <div class="tactical-tag rank-tag">
+              <span class="tag-icon">🛡️</span>
+              <span class="tag-txt">PATENTE: PRATA ➔ PLATINA</span>
+            </div>
+          </div>
+
+          <!-- Main Huge Glitch Title -->
+          <h1 class="hero-title" data-glitch="CAPUAVA TEAM">
+            <span class="hero-word-primary">CAPUAVA</span>
+            <span class="hero-word-secondary">TEAM</span>
+          </h1>
+
+          <p class="hero-description">
+            Time brasileiro de <strong>Rainbow Six Siege</strong> altamente focado em plays tryhards, leitura milimétrica de mapa, execuções sincronizadas e retakes decisivos. Entrosamento absoluto rumo ao <em>Platina</em>.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#stats" class="btn btn-cyber-primary btn-lg" data-sound="deploy">
+              <span class="btn-content">EXPLORAR STATS AO VIVO <span class="arrow-sym">➔</span></span>
+              <span class="corner c-tl"></span><span class="corner c-br"></span>
+            </a>
+            <a href="#roster" class="btn btn-cyber-ghost btn-lg" data-sound="click">
+              <span class="btn-content">VER ESCALAÇÃO (5 PLAYERS)</span>
+              <span class="corner c-tr"></span><span class="corner c-bl"></span>
+            </a>
+            <button class="btn btn-cyber-icon" id="quickDossierBtn" title="Dossiê Rápido" data-sound="ping">
+              <span class="btn-content">🎯</span>
+            </button>
+          </div>
+
+          <!-- HUD Quick Target Specs -->
+          <div class="hero-specs-bar">
+            <div class="spec-cell">
+              <span class="spec-label">OBJETIVO DA TEMPORADA</span>
+              <span class="spec-value text-accent">PLATINA III OU BAN</span>
+            </div>
+            <div class="spec-cell">
+              <span class="spec-label">ESTILO DE JOGO</span>
+              <span class="spec-value">EXECUÇÃO 20s & RETAKE</span>
+            </div>
+            <div class="spec-cell">
+              <span class="spec-label">BASE OPERACIONAL</span>
+              <span class="spec-value">SANTO ANDRÉ, SP - BR</span>
+            </div>
+            <div class="spec-cell">
+              <span class="spec-label">COMUNICAÇÃO</span>
+              <span class="spec-value text-accent">DISCORD TRYHARD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERO 3D TACTICAL WIDGET / HOLOGRAM CARD -->
+        <div class="hero-visual-card" data-tilt>
+          <div class="holo-card-inner">
+            <div class="holo-sheen"></div>
+            <div class="holo-header">
+              <div class="holo-badge">STATUS DA SQUAD</div>
+              <div class="holo-live"><span class="dot-live"></span> TRANSMISSÃO TÁTICA</div>
+            </div>
+
+            <!-- Mini Radar Display -->
+            <div class="radar-box">
+              <div class="radar-circle rc1"></div>
+              <div class="radar-circle rc2"></div>
+              <div class="radar-circle rc3"></div>
+              <div class="radar-axis-x"></div>
+              <div class="radar-axis-y"></div>
+              <div class="radar-sweep-hand"></div>
+              <!-- Radar Blips -->
+              <div class="radar-blip blip-1" title="luccasramoos"><span>P1</span></div>
+              <div class="radar-blip blip-2" title="BorisDream"><span>P2</span></div>
+              <div class="radar-blip blip-3" title="xVaral"><span>P3</span></div>
+              <div class="radar-blip blip-4" title="Sabetinha"><span>P4</span></div>
+              <div class="radar-blip blip-5" title="PedroHs"><span>P5</span></div>
+            </div>
+
+            <div class="holo-footer">
+              <div class="holo-stat-mini">
+                <span class="hsm-num">5/5</span>
+                <span class="hsm-lbl">OPERADORES PRONTOS</span>
+              </div>
+              <div class="holo-stat-mini">
+                <span class="hsm-num text-accent">98.4%</span>
+                <span class="hsm-lbl">COBERTURA DE DRONE</span>
+              </div>
+            </div>
+          </div>
+          <div class="holo-card-glow"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STATS DASHBOARD SECTION (#stats) -->
+    <section class="section stats-section" id="stats">
+      <div class="wrap">
+        
+        <div class="section-title-wrap">
+          <div class="sec-meta-tag">
+            <span class="meta-bracket">[</span> SECTOR 01 : TELEMETRIA TÁTICA <span class="meta-bracket">]</span>
+          </div>
+          <h2 class="section-heading">ESTATÍSTICAS DA EQUIPE</h2>
+          <p class="section-sub">Métricas consolidadas de desempenho em partidas rankeadas e torneios sul-americanos.</p>
+        </div>
+
+        <!-- 4 Primary Stat HUD Cards -->
+        <div class="stats-grid">
+          
+          <!-- Stat 1: Rankeds Ganhas -->
+          <div class="stat-card" data-tilt data-sound="hover">
+            <div class="stat-card-border"></div>
+            <div class="stat-card-glow"></div>
+            <div class="stat-head">
+              <span class="stat-icon">🏆</span>
+              <span class="stat-tag tag-cyan">SEASON ATUAL</span>
+            </div>
+            <div class="stat-number-box">
+              <span class="stat-value counter" data-target="24">0</span>
+              <span class="stat-suffix">WINS</span>
+            </div>
+            <div class="stat-caption">Rankeds Ganhas</div>
+            <div class="stat-progress-bar">
+              <div class="bar-fill" style="--percent: 75%;"></div>
+            </div>
+            <div class="stat-foot">
+              <span>Sequência Recente: <strong class="text-accent">+4 vitórias</strong></span>
+              <span class="stat-trend up">▲ +18%</span>
+            </div>
+          </div>
+
+          <!-- Stat 2: Taxa de Vitória -->
+          <div class="stat-card" data-tilt data-sound="hover">
+            <div class="stat-card-border"></div>
+            <div class="stat-card-glow"></div>
+            <div class="stat-head">
+              <span class="stat-icon">🎯</span>
+              <span class="stat-tag tag-cyan">WINRATE TOTAL</span>
+            </div>
+            <div class="stat-number-box">
+              <span class="stat-value counter" data-target="49" data-suffix="%">0</span>
+              <span class="stat-suffix">%</span>
+            </div>
+            <div class="stat-caption">Taxa de Vitória</div>
+            <div class="stat-progress-bar">
+              <div class="bar-fill" style="--percent: 49%;"></div>
+            </div>
+            <div class="stat-foot">
+              <span>Saldo: <strong>24V / 25D</strong></span>
+              <span class="stat-badge-pulse">EQUILIBRADO</span>
+            </div>
+          </div>
+
+          <!-- Stat 3: K/D Médio -->
+          <div class="stat-card" data-tilt data-sound="hover">
+            <div class="stat-card-border"></div>
+            <div class="stat-card-glow"></div>
+            <div class="stat-head">
+              <span class="stat-icon">💀</span>
+              <span class="stat-tag tag-cyan">COMBAT RATIO</span>
+            </div>
+            <div class="stat-number-box">
+              <span class="stat-value counter" data-target="0.8" data-decimals="1">0.0</span>
+              <span class="stat-suffix">K/D</span>
+            </div>
+            <div class="stat-caption">K/D Médio Coletivo</div>
+            <div class="stat-progress-bar">
+              <div class="bar-fill" style="--percent: 54%;"></div>
+            </div>
+            <div class="stat-foot">
+              <span>Frags: <strong>412</strong> | Mortes: <strong>515</strong></span>
+              <span class="stat-trend neutral">● CONSTANTE</span>
+            </div>
+          </div>
+
+          <!-- Stat 4: Ranking Hot Card -->
+          <div class="stat-card hot-card" data-tilt data-sound="hover">
+            <div class="stat-card-border"></div>
+            <div class="stat-card-glow"></div>
+            <div class="stat-head">
+              <span class="stat-icon">⚡</span>
+              <span class="stat-tag tag-orange">CLASSIFICAÇÃO</span>
+            </div>
+            <div class="stat-number-box">
+              <span class="stat-value text-gradient-orange">Prata</span>
+              <span class="stat-suffix rank-badge">DIVISÃO IV</span>
+            </div>
+            <div class="stat-caption">Ranking Competitivo</div>
+            <div class="stat-progress-bar">
+              <div class="bar-fill fill-orange" style="--percent: 68%;"></div>
+            </div>
+            <div class="stat-foot">
+              <span>MMR Atual: <strong class="text-orange">2.140 MMR</strong></span>
+              <span class="stat-trend up">▲ PROMOÇÃO PROX.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ADVANCED STATS METRICS & COMPARISON STRIP -->
+        <div class="advanced-stats-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="panel-led"></span> ANÁLISE DE COMBATE AVANÇADA
+            </div>
+            <div class="panel-filter-btns">
+              <button class="filter-btn active" data-period="season" data-sound="click">SEASON ATUAL</button>
+              <button class="filter-btn" data-period="alltime" data-sound="click">HISTÓRICO COMPLETO</button>
+            </div>
+          </div>
+
+          <div class="panel-body-grid">
+            <!-- Metric 1: Headshot Ratio -->
+            <div class="metric-meter-box">
+              <div class="meter-info">
+                <span class="meter-title">Taxa Média de Headshot (HS%)</span>
+                <span class="meter-value text-accent font-mono">41.0%</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill" style="width: 41%;"></div>
+                <div class="meter-marker" style="left: 41%;"></div>
+              </div>
+              <div class="meter-legend">
+                <span>Média Regional: 35%</span>
+                <span class="text-accent">+6% Acima da Média</span>
+              </div>
+            </div>
+
+            <!-- Metric 2: Plant/Defuse Efficiency -->
+            <div class="metric-meter-box">
+              <div class="meter-info">
+                <span class="meter-title">Taxa de Plant Concluído</span>
+                <span class="meter-value text-accent font-mono">68.5%</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill fill-orange" style="width: 68.5%;"></div>
+                <div class="meter-marker" style="left: 68.5%;"></div>
+              </div>
+              <div class="meter-legend">
+                <span>Rounds de Ataque: 124</span>
+                <span class="text-orange">Especialidade em Smoke Plants</span>
+              </div>
+            </div>
+
+            <!-- Metric 3: Clutch Rate -->
+            <div class="metric-meter-box">
+              <div class="meter-info">
+                <span class="meter-title">Taxa de Conversão em Clutch (1vX)</span>
+                <span class="meter-value text-accent font-mono">31.2%</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill" style="width: 31.2%;"></div>
+                <div class="meter-marker" style="left: 31.2%;"></div>
+              </div>
+              <div class="meter-legend">
+                <span>15 Clutches Convertidos</span>
+                <span class="text-accent">Destaque: BorisDream (7)</span>
+              </div>
+            </div>
+
+            <!-- Metric 4: Retake Efficiency -->
+            <div class="metric-meter-box">
+              <div class="meter-info">
+                <span class="meter-title">Eficiência de Retake (Defesa)</span>
+                <span class="meter-value text-accent font-mono">54.0%</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-fill" style="width: 54%;"></div>
+                <div class="meter-marker" style="left: 54%;"></div>
+              </div>
+              <div class="meter-legend">
+                <span>Rounds Defendidos: 136</span>
+                <span class="text-accent">Defesa de C4 & Gás Ativa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ROAD TO PLATINUM SECTION (#progression) -->
+    <section class="section progression-section" id="progression">
+      <div class="wrap">
+        
+        <div class="section-title-wrap">
+          <div class="sec-meta-tag">
+            <span class="meta-bracket">[</span> SECTOR 02 : MISSÃO PRINCIPAL <span class="meta-bracket">]</span>
+          </div>
+          <h2 class="section-heading">OPERATÓRIO: RUMO AO PLATINA</h2>
+          <p class="section-sub">Acompanhe a escalada de patente do Capuava Team em tempo real.</p>
+        </div>
+
+        <div class="rank-ladder-container">
+          
+          <!-- Ranks Timeline Track -->
+          <div class="ladder-track">
+            
+            <!-- Tier 1: Cobre -->
+            <div class="ladder-step done">
+              <div class="step-badge">
+                <span class="step-icon">🥉</span>
+                <span class="step-name">COBRE</span>
+              </div>
+              <div class="step-status">SUPERADO</div>
+              <div class="step-mmr">&lt; 1.600 MMR</div>
+            </div>
+
+            <!-- Tier 2: Bronze -->
+            <div class="ladder-step done">
+              <div class="step-badge">
+                <span class="step-icon">🥉</span>
+                <span class="step-name">BRONZE</span>
+              </div>
+              <div class="step-status">SUPERADO</div>
+              <div class="step-mmr">1.600 – 2.099</div>
+            </div>
+
+            <!-- Tier 3: Prata (CURRENT ACTIVE) -->
+            <div class="ladder-step current">
+              <div class="step-pulse"></div>
+              <div class="step-badge">
+                <span class="step-icon">🥈</span>
+                <span class="step-name">PRATA</span>
+              </div>
+              <div class="step-status active-tag">PATENTE ATUAL</div>
+              <div class="step-mmr highlight">2.140 MMR</div>
+              <div class="step-detail">Faltam 360 MMR p/ Ouro</div>
+            </div>
+
+            <!-- Tier 4: Ouro -->
+            <div class="ladder-step next">
+              <div class="step-badge">
+                <span class="step-icon">🥇</span>
+                <span class="step-name">OURO</span>
+              </div>
+              <div class="step-status">PRÓXIMO ALVO</div>
+              <div class="step-mmr">2.500 – 3.199</div>
+              <div class="step-detail">~8 Vitórias seguidas</div>
+            </div>
+
+            <!-- Tier 5: Platina (TARGET GOAL) -->
+            <div class="ladder-step final-target">
+              <div class="step-badge target-glow">
+                <span class="step-icon">💎</span>
+                <span class="step-name">PLATINA</span>
+              </div>
+              <div class="step-status target-tag">OBJETIVO MÁXIMO</div>
+              <div class="step-mmr gold-text">3.200+ MMR</div>
+              <div class="step-detail">Rumo à Elite</div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Win Calculator -->
+          <div class="calculator-card">
+            <div class="calc-header">
+              <div class="calc-title">
+                <span class="calc-icon">🧮</span>
+                <span>SIMULADOR TÁTICO DE VITÓRIAS</span>
+              </div>
+              <span class="calc-sub">Quantas vitórias o Capuava precisa para subir?</span>
+            </div>
+            
+            <div class="calc-body">
+              <div class="calc-control-group">
+                <label for="winSlider">Vitórias Consecutivas Simuladas: <span id="winCountVal" class="text-accent font-mono font-bold">5 vitórias</span></label>
+                <input type="range" id="winSlider" min="1" max="20" value="5" class="cyber-slider">
+              </div>
+
+              <div class="calc-results-grid">
+                <div class="calc-result-box">
+                  <span class="cr-label">MMR PROJETADO</span>
+                  <span class="cr-val text-accent font-mono" id="projectedMMR">2.340 MMR</span>
+                </div>
+                <div class="calc-result-box">
+                  <span class="cr-label">PATENTE PREVISTA</span>
+                  <span class="cr-val text-orange font-mono" id="projectedRank">PRATA II</span>
+                </div>
+                <div class="calc-result-box">
+                  <span class="cr-label">CHANCE DE TILT</span>
+                  <span class="cr-val text-muted font-mono" id="projectedTilt">12% (BAIXA)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ROSTER / PLAYERS SECTION (#roster) -->
+    <section class="section roster-section" id="roster">
+      <div class="wrap">
+        
+        <div class="roster-header-flex">
+          <div class="section-title-wrap no-margin">
+            <div class="sec-meta-tag">
+              <span class="meta-bracket">[</span> SECTOR 03 : OPERADORES TÁTICOS <span class="meta-bracket">]</span>
+            </div>
+            <h2 class="section-heading">ELENCO ATUAL</h2>
+            <p class="section-sub">5 titulares especializados em funções táticas exclusivas.</p>
+          </div>
+
+          <!-- Role Filter Tabs -->
+          <div class="roster-filters" role="tablist">
+            <button class="roster-filter-btn active" data-filter="all" data-sound="click">TODOS (5)</button>
+            <button class="roster-filter-btn" data-filter="Fragger" data-sound="click">FRAGGERS (2)</button>
+            <button class="roster-filter-btn" data-filter="Suporte" data-sound="click">SUPORTE (2)</button>
+            <button class="roster-filter-btn" data-filter="Intermediário" data-sound="click">INTERMEDIÁRIO (1)</button>
+          </div>
+        </div>
+
+        <!-- Player Cards Grid with 3D Tilt -->
+        <div class="roster-grid" id="rosterGrid">
+
+          <!-- PLAYER 1: luccasramoos -->
+          <article class="player-card" data-role="Fragger" data-id="luccasramoos" data-tilt data-sound="card">
+            <div class="card-glass-layer"></div>
+            <div class="card-glow-layer"></div>
+
+            <div class="player-card-top">
+              <span class="player-role-badge badge-fragger">FRAGGER</span>
+              <span class="player-op-badge">BLACKBEARD</span>
+            </div>
+
+            <div class="player-avatar-wrap">
+              <img src="assets/operator-blackbeard.jpg" alt="luccasramoos operando Blackbeard" class="player-img" loading="lazy">
+              <div class="avatar-hud-overlay">
+                <span class="avatar-crosshair"></span>
+                <span class="avatar-tag">OP // BB-01</span>
+              </div>
+            </div>
+
+            <div class="player-info">
+              <h3 class="player-nick">luccasramoos</h3>
+              <p class="player-spec">Entry Fragger • Escudo Tático • Breach Frontal</p>
+            </div>
+
+            <!-- Player Stats HUD List -->
+            <div class="player-metrics">
+              <div class="metric-col">
+                <span class="mc-lbl">K/D</span>
+                <span class="mc-val">0.8</span>
+                <div class="mc-bar"><span style="width: 53%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">HS%</span>
+                <span class="mc-val">34%</span>
+                <div class="mc-bar"><span style="width: 34%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">WIN%</span>
+                <span class="mc-val highlight">49%</span>
+                <div class="mc-bar"><span style="width: 49%;"></span></div>
+              </div>
+            </div>
+
+            <div class="player-card-foot">
+              <button class="btn btn-inspect" data-inspect="luccasramoos" data-sound="ping">
+                <span>VER DOSSIÊ TÁTICO</span>
+                <span class="btn-arr">➔</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- PLAYER 2: xVaral -->
+          <article class="player-card" data-role="Suporte" data-id="xVaral" data-tilt data-sound="card">
+            <div class="card-glass-layer"></div>
+            <div class="card-glow-layer"></div>
+
+            <div class="player-card-top">
+              <span class="player-role-badge badge-support">SUPORTE</span>
+              <span class="player-op-badge">BANDIT</span>
+            </div>
+
+            <div class="player-avatar-wrap">
+              <img src="assets/operator-bandit.jpg" alt="xVaral operando Bandit" class="player-img" loading="lazy">
+              <div class="avatar-hud-overlay">
+                <span class="avatar-crosshair"></span>
+                <span class="avatar-tag">OP // BND-02</span>
+              </div>
+            </div>
+
+            <div class="player-info">
+              <h3 class="player-nick">xVaral</h3>
+              <p class="player-spec">Hard Support • Bandit Trick • Eletrificação de Paredes</p>
+            </div>
+
+            <div class="player-metrics">
+              <div class="metric-col">
+                <span class="mc-lbl">K/D</span>
+                <span class="mc-val highlight">1.0</span>
+                <div class="mc-bar"><span style="width: 66%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">HS%</span>
+                <span class="mc-val">41%</span>
+                <div class="mc-bar"><span style="width: 41%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">WIN%</span>
+                <span class="mc-val highlight">49%</span>
+                <div class="mc-bar"><span style="width: 49%;"></span></div>
+              </div>
+            </div>
+
+            <div class="player-card-foot">
+              <button class="btn btn-inspect" data-inspect="xVaral" data-sound="ping">
+                <span>VER DOSSIÊ TÁTICO</span>
+                <span class="btn-arr">➔</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- PLAYER 3: BorisDream -->
+          <article class="player-card highlight-mvp" data-role="Fragger" data-id="BorisDream" data-tilt data-sound="card">
+            <div class="card-glass-layer"></div>
+            <div class="card-glow-layer"></div>
+            <div class="mvp-ribbon">MVP DA SQUAD</div>
+
+            <div class="player-card-top">
+              <span class="player-role-badge badge-fragger">FRAGGER</span>
+              <span class="player-op-badge">LESION</span>
+            </div>
+
+            <div class="player-avatar-wrap">
+              <img src="assets/operator-lesion.jpg" alt="BorisDream operando Lesion" class="player-img" loading="lazy">
+              <div class="avatar-hud-overlay">
+                <span class="avatar-crosshair"></span>
+                <span class="avatar-tag">OP // LSN-03</span>
+              </div>
+            </div>
+
+            <div class="player-info">
+              <h3 class="player-nick">BorisDream</h3>
+              <p class="player-spec">Roamer • Controle de Flanco • Gu Mines Specialist</p>
+            </div>
+
+            <div class="player-metrics">
+              <div class="metric-col">
+                <span class="mc-lbl">K/D</span>
+                <span class="mc-val star-val">1.5</span>
+                <div class="mc-bar"><span class="bar-gold" style="width: 100%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">HS%</span>
+                <span class="mc-val star-val">59%</span>
+                <div class="mc-bar"><span class="bar-gold" style="width: 59%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">WIN%</span>
+                <span class="mc-val highlight">49%</span>
+                <div class="mc-bar"><span style="width: 49%;"></span></div>
+              </div>
+            </div>
+
+            <div class="player-card-foot">
+              <button class="btn btn-inspect" data-inspect="BorisDream" data-sound="ping">
+                <span>VER DOSSIÊ TÁTICO</span>
+                <span class="btn-arr">➔</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- PLAYER 4: Sabetinha -->
+          <article class="player-card" data-role="Intermediário" data-id="Sabetinha" data-tilt data-sound="card">
+            <div class="card-glass-layer"></div>
+            <div class="card-glow-layer"></div>
+
+            <div class="player-card-top">
+              <span class="player-role-badge badge-flex">INTERMEDIÁRIO</span>
+              <span class="player-op-badge">JÄGER</span>
+            </div>
+
+            <div class="player-avatar-wrap">
+              <img src="assets/operator-jager.jpg" alt="Sabetinha operando Jäger" class="player-img" loading="lazy">
+              <div class="avatar-hud-overlay">
+                <span class="avatar-crosshair"></span>
+                <span class="avatar-tag">OP // JGR-04</span>
+              </div>
+            </div>
+
+            <div class="player-info">
+              <h3 class="player-nick">Sabetinha</h3>
+              <p class="player-spec">Anchor / Flex • ADS Anti-Projéteis • Segundo Contato</p>
+            </div>
+
+            <div class="player-metrics">
+              <div class="metric-col">
+                <span class="mc-lbl">K/D</span>
+                <span class="mc-val highlight">1.3</span>
+                <div class="mc-bar"><span style="width: 86%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">HS%</span>
+                <span class="mc-val">45%</span>
+                <div class="mc-bar"><span style="width: 45%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">WIN%</span>
+                <span class="mc-val highlight">49%</span>
+                <div class="mc-bar"><span style="width: 49%;"></span></div>
+              </div>
+            </div>
+
+            <div class="player-card-foot">
+              <button class="btn btn-inspect" data-inspect="Sabetinha" data-sound="ping">
+                <span>VER DOSSIÊ TÁTICO</span>
+                <span class="btn-arr">➔</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- PLAYER 5: PedroHs -->
+          <article class="player-card" data-role="Suporte" data-id="PedroHs" data-tilt data-sound="card">
+            <div class="card-glass-layer"></div>
+            <div class="card-glow-layer"></div>
+
+            <div class="player-card-top">
+              <span class="player-role-badge badge-support">SUPORTE</span>
+              <span class="player-op-badge">SMOKE</span>
+            </div>
+
+            <div class="player-avatar-wrap">
+              <img src="assets/operator-smoke.jpg" alt="PedroHs operando Smoke" class="player-img" loading="lazy">
+              <div class="avatar-hud-overlay">
+                <span class="avatar-crosshair"></span>
+                <span class="avatar-tag">OP // SMK-05</span>
+              </div>
+            </div>
+
+            <div class="player-info">
+              <h3 class="player-nick">PedroHs</h3>
+              <p class="player-spec">Site Anchor • Área Denial (Gás Tóxico) • Plant Interrupter</p>
+            </div>
+
+            <div class="player-metrics">
+              <div class="metric-col">
+                <span class="mc-lbl">K/D</span>
+                <span class="mc-val">0.9</span>
+                <div class="mc-bar"><span style="width: 60%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">HS%</span>
+                <span class="mc-val">26%</span>
+                <div class="mc-bar"><span style="width: 26%;"></span></div>
+              </div>
+              <div class="metric-col">
+                <span class="mc-lbl">WIN%</span>
+                <span class="mc-val highlight">49%</span>
+                <div class="mc-bar"><span style="width: 49%;"></span></div>
+              </div>
+            </div>
+
+            <div class="player-card-foot">
+              <button class="btn btn-inspect" data-inspect="PedroHs" data-sound="ping">
+                <span>VER DOSSIÊ TÁTICO</span>
+                <span class="btn-arr">➔</span>
+              </button>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- HEAD-TO-HEAD COMPARISON TOOL -->
+        <div class="compare-module">
+          <div class="compare-header">
+            <div class="comp-title">
+              <span class="comp-icon">⚖️</span>
+              <span>COMPARADOR TÁTICO DIRETO (1v1 INTERNO)</span>
+            </div>
+            <span class="comp-desc">Selecione dois operadores para analisar os confrontos estatísticos</span>
+          </div>
+
+          <div class="compare-selectors">
+            <div class="comp-select-wrap">
+              <label for="compPlayer1">OPERADOR A:</label>
+              <select id="compPlayer1" class="cyber-select" data-sound="click">
+                <option value="BorisDream" selected>BorisDream (Fragger - 1.5 K/D)</option>
+                <option value="Sabetinha">Sabetinha (Interm. - 1.3 K/D)</option>
+                <option value="xVaral">xVaral (Suporte - 1.0 K/D)</option>
+                <option value="PedroHs">PedroHs (Suporte - 0.9 K/D)</option>
+                <option value="luccasramoos">luccasramoos (Fragger - 0.8 K/D)</option>
+              </select>
+            </div>
+            
+            <div class="comp-vs-badge">VS</div>
+
+            <div class="comp-select-wrap">
+              <label for="compPlayer2">OPERADOR B:</label>
+              <select id="compPlayer2" class="cyber-select" data-sound="click">
+                <option value="luccasramoos">luccasramoos (Fragger - 0.8 K/D)</option>
+                <option value="xVaral">xVaral (Suporte - 1.0 K/D)</option>
+                <option value="BorisDream">BorisDream (Fragger - 1.5 K/D)</option>
+                <option value="Sabetinha" selected>Sabetinha (Interm. - 1.3 K/D)</option>
+                <option value="PedroHs">PedroHs (Suporte - 0.9 K/D)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Comparison Results -->
+          <div class="compare-display-grid" id="compareDisplay">
+            <!-- Dynamically injected via JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MAP POOL PERFORMANCE SECTION (#maps) -->
+    <section class="section maps-section" id="maps">
+      <div class="wrap">
+        
+        <div class="section-title-wrap">
+          <div class="sec-meta-tag">
+            <span class="meta-bracket">[</span> SECTOR 04 : MAP POOL TÁTICO <span class="meta-bracket">]</span>
+          </div>
+          <h2 class="section-heading">EFICIÊNCIA DE MAPAS</h2>
+          <p class="section-sub">Taxa de vitória e estratégias por mapa oficial do circuito competitivo.</p>
+        </div>
+
+        <div class="maps-grid">
+          
+          <div class="map-card" data-tilt data-sound="hover">
+            <div class="map-bg map-oregon"></div>
+            <div class="map-overlay"></div>
+            <div class="map-content">
+              <div class="map-header">
+                <span class="map-rate text-accent">58% WR</span>
+                <span class="map-pick-badge">MAPA FORTE</span>
+              </div>
+              <h3 class="map-title">OREGON</h3>
+              <p class="map-desc">Bombsite favorito: Laundry & Supply. Excelente controle de dormitório no ataque.</p>
+              <div class="map-stats-row">
+                <span>Atk: 52%</span>
+                <span>Def: 64%</span>
+                <span>Ban Rate: 15%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-card" data-tilt data-sound="hover">
+            <div class="map-bg map-club"></div>
+            <div class="map-overlay"></div>
+            <div class="map-content">
+              <div class="map-header">
+                <span class="map-rate text-accent">52% WR</span>
+                <span class="map-pick-badge">EQUILIBRADO</span>
+              </div>
+              <h3 class="map-title">CLUBHOUSE</h3>
+              <p class="map-desc">Controle de CCTV e garagem. Defesa pesada em Basement com Bandit Trick.</p>
+              <div class="map-stats-row">
+                <span>Atk: 46%</span>
+                <span>Def: 58%</span>
+                <span>Ban Rate: 28%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-card" data-tilt data-sound="hover">
+            <div class="map-bg map-chalet"></div>
+            <div class="map-overlay"></div>
+            <div class="map-content">
+              <div class="map-header">
+                <span class="map-rate">47% WR</span>
+                <span class="map-pick-badge neutral">EM AJUSTE</span>
+              </div>
+              <h3 class="map-title">CHALET</h3>
+              <p class="map-desc">Briga intensa de garagem de adega. Estratégia de split push em Master Bedroom.</p>
+              <div class="map-stats-row">
+                <span>Atk: 49%</span>
+                <span>Def: 45%</span>
+                <span>Ban Rate: 33%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-card" data-tilt data-sound="hover">
+            <div class="map-bg map-villa"></div>
+            <div class="map-overlay"></div>
+            <div class="map-content">
+              <div class="map-header">
+                <span class="map-rate text-orange">41% WR</span>
+                <span class="map-pick-badge danger">PERMA-BAN</span>
+              </div>
+              <h3 class="map-title">VILLA</h3>
+              <p class="map-desc">Geralmente vetado pelo time. Ajustando rotações e drones na adega e aviário.</p>
+              <div class="map-stats-row">
+                <span>Atk: 38%</span>
+                <span>Def: 44%</span>
+                <span>Ban Rate: 72%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- AGENDA / UPCOMING MATCH SECTION (#agenda) -->
+    <section class="section match-section" id="agenda">
+      <div class="wrap">
+        
+        <div class="section-title-wrap">
+          <div class="sec-meta-tag">
+            <span class="meta-bracket">[</span> SECTOR 05 : CONFRONTO MARCADO <span class="meta-bracket">]</span>
+          </div>
+          <h2 class="section-heading">PRÓXIMAS PARTIDAS</h2>
+          <p class="section-sub">Cronômetro em tempo real para o próximo clássico tryhard.</p>
+        </div>
+
+        <div class="match-arena-card" data-tilt>
+          <div class="arena-glow"></div>
+          
+          <div class="arena-header">
+            <div class="arena-tag"><span class="tag-live-dot"></span> RANKED TRYHARD COMPETITIVA • MD3</div>
+            <div class="arena-date">SÁBADO • 18:00 (HORÁRIO DE BRASÍLIA)</div>
+          </div>
+
+          <!-- Countdown Timer -->
+          <div class="countdown-hud" id="countdownHud">
+            <div class="time-block">
+              <span class="time-digit" id="cdDays">02</span>
+              <span class="time-label">DIAS</span>
+            </div>
+            <span class="time-divider">:</span>
+            <div class="time-block">
+              <span class="time-digit" id="cdHours">14</span>
+              <span class="time-label">HORAS</span>
+            </div>
+            <span class="time-divider">:</span>
+            <div class="time-block">
+              <span class="time-digit" id="cdMins">32</span>
+              <span class="time-label">MIN</span>
+            </div>
+            <span class="time-divider">:</span>
+            <div class="time-block">
+              <span class="time-digit text-accent" id="cdSecs">48</span>
+              <span class="time-label">SEG</span>
+            </div>
+          </div>
+
+          <!-- Versus Clash Visualization -->
+          <div class="versus-arena-grid">
+            
+            <!-- Team 1: Capuava Team -->
+            <div class="clash-team home">
+              <div class="team-crest-large">
+                <span class="crest-icon-lg">C</span>
+              </div>
+              <div class="team-details">
+                <h3 class="team-name">CAPUAVA TEAM</h3>
+                <span class="team-sub">Esquadrão Tático • Prata IV</span>
+                <div class="team-roster-preview">
+                  <span>luccasramoos</span> • <span>BorisDream</span> • <span>xVaral</span> • <span>Sabetinha</span> • <span>PedroHs</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- VS Badge Middle -->
+            <div class="clash-middle">
+              <div class="vs-circle">VS</div>
+              <span class="match-mode-tag">BO3 SERIES</span>
+              <div class="prob-bar">
+                <div class="prob-fill home-prob" style="width: 58%;" title="Probabilidade de vitória Capuava: 58%">58%</div>
+                <div class="prob-fill away-prob" style="width: 42%;" title="Probabilidade de vitória Pratas: 42%">42%</div>
+              </div>
+              <span class="prob-label">CHANCES PREVISTAS PELA IA</span>
+            </div>
+
+            <!-- Team 2: Os Pratas -->
+            <div class="clash-team away">
+              <div class="team-crest-large rival-crest">
+                <span class="crest-icon-lg">P</span>
+              </div>
+              <div class="team-details">
+                <h3 class="team-name">OS PRATAS</h3>
+                <span class="team-sub">Rival Histórico da Fila Rankeada</span>
+                <div class="team-roster-preview">
+                  <span>MisterAsh</span> • <span>DocSpawnpeek</span> • <span>ThermiteNoob</span> • <span>CaveiraSolo</span> • <span>CastleTroll</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="arena-footer">
+            <div class="arena-foot-info">
+              <span>Transmissão: <strong>Discord & Twitch dos Membros</strong></span>
+              <span>Regras: <strong>Modo Competitivo Padrão (6 Rounds Atk/Def)</strong></span>
+            </div>
+            <button class="btn btn-cyber-primary" id="notifyMatchBtn" data-sound="deploy">
+              <span class="btn-content">🔔 RECEBER ALERTA NO DISCORD</span>
+              <span class="corner c-tl"></span><span class="corner c-br"></span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SPONSORS SECTION (#sponsors) -->
+    <section class="section sponsors-section" id="sponsors">
+      <div class="wrap">
+        
+        <div class="section-title-wrap">
+          <div class="sec-meta-tag">
+            <span class="meta-bracket">[</span> SECTOR 06 : PARCERIAS & APOIO <span class="meta-bracket">]</span>
+          </div>
+          <h2 class="section-heading">PATROCINADORES OFICIAIS</h2>
+          <p class="section-sub">Empresas e benefícios que mantêm a energia e o tryhard da squad funcionando 24/7.</p>
+        </div>
+
+        <div class="sponsors-cyber-grid">
+          
+          <!-- Sponsor 1 -->
+          <div class="sponsor-cyber-card" data-tilt data-sound="hover">
+            <div class="sc-tier">TIER DIAMANTE • MASTER</div>
+            <div class="sc-icon">🏛️</div>
+            <h3 class="sc-name">Bolsa Família</h3>
+            <p class="sc-desc">Financiamento do passe de batalha, internet de fibra ótica de 500MB e mantimento da equipe na line ativa.</p>
+            <div class="sc-tag">SUBSÍDIO TÁTICO</div>
+          </div>
+
+          <!-- Sponsor 2 -->
+          <div class="sponsor-cyber-card" data-tilt data-sound="hover">
+            <div class="sc-tier">TIER OURO • ENERGIA</div>
+            <div class="sc-icon">🍔</div>
+            <h3 class="sc-name">iFood</h3>
+            <p class="sc-desc">Combustível noturno durante as madrugadas de overtime 4-4. Lanches rápidos entre troca de operadoras.</p>
+            <div class="sc-tag">REABASTECIMENTO RÁPIDO</div>
+          </div>
+
+          <!-- Sponsor 3 -->
+          <div class="sponsor-cyber-card" data-tilt data-sound="hover">
+            <div class="sc-tier">TIER PRATA • ALIMENTAÇÃO</div>
+            <div class="sc-icon">🥐</div>
+            <h3 class="sc-name">Bakanas Salgados</h3>
+            <p class="sc-desc">Coxinhas e pastéis crocantes direto do centro de Santo André para recarregar o reflexo do clutch.</p>
+            <div class="sc-tag">SNACK OFICIAL DA SQUAD</div>
+          </div>
+
+          <!-- Sponsor 4 -->
+          <div class="sponsor-cyber-card" data-tilt data-sound="hover">
+            <div class="sc-tier">TIER PRATA • LOGÍSTICA</div>
+            <div class="sc-icon">🛵</div>
+            <h3 class="sc-name">Jho Bahia Entregas</h3>
+            <p class="sc-desc">Entrega relâmpago de peças de PC, periféricos, mousepads e encomendas táticas sem atraso de rotação.</p>
+            <div class="sc-tag">ROTAÇÃO VELOZ</div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="wrap">
+      
+      <div class="footer-main-grid">
+        <div class="footer-brand-col">
+          <div class="brand-link footer-brand">
+            <div class="brand-crest">
+              <span class="crest-letter">C</span>
+            </div>
+            <div class="brand-text">
+              <span class="brand-title">CAPUAVA<span class="text-accent">TEAM</span></span>
+              <span class="brand-subtitle">RAINBOW SIX SIEGE ESPORTS</span>
+            </div>
+          </div>
+          <p class="footer-bio">
+            Equipe independente brasileira competindo com garra no cenário tático de Rainbow Six Siege. Santo André, São Paulo • Brasil.
+          </p>
+          <div class="footer-social-links">
+            <a href="#" class="social-btn" title="Discord Capuava" data-sound="click">💬 Discord</a>
+            <a href="#" class="social-btn" title="Twitch TV" data-sound="click">📺 Twitch</a>
+            <a href="#" class="social-btn" title="Twitter / X" data-sound="click">🐦 X / Twitter</a>
+            <a href="#" class="social-btn" title="YouTube R6" data-sound="click">▶ YouTube</a>
+          </div>
+        </div>
+
+        <div class="footer-links-col">
+          <h4 class="footer-col-title">NAVEGAÇÃO RÁPIDA</h4>
+          <ul class="footer-list">
+            <li><a href="#top" data-sound="blip">Início</a></li>
+            <li><a href="#stats" data-sound="blip">Estatísticas Coletivas</a></li>
+            <li><a href="#progression" data-sound="blip">Rumo ao Platina</a></li>
+            <li><a href="#roster" data-sound="blip">Elenco & Dossiês</a></li>
+            <li><a href="#maps" data-sound="blip">Estatísticas de Mapas</a></li>
+            <li><a href="#agenda" data-sound="blip">Próximas Partidas</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact-col">
+          <h4 class="footer-col-title">CONTATO & SCRIMS</h4>
+          <p class="footer-contact-item">
+            <span class="fci-icon">✉️</span>
+            <span>contato@capuavateam.gg</span>
+          </p>
+          <p class="footer-contact-item">
+            <span class="fci-icon">📍</span>
+            <span>Santo André, São Paulo — Brasil</span>
+          </p>
+          <p class="footer-contact-item">
+            <span class="fci-icon">🎮</span>
+            <span>Scrims & Treinos: Aberto para Desafios</span>
+          </p>
+          <div class="footer-callout">
+            <span class="callout-badge">RECRUTAMENTO</span>
+            <span>Buscando 6º player reserva focado em Hard Breach e Plant.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div class="fbb-left">
+          © 2026 Capuava Team. Todos os direitos reservados. Rainbow Six Siege é marca registrada da Ubisoft Entertainment.
+        </div>
+        <div class="fbb-right">
+          <span class="hud-mono">BUILD V4.2.0-CYBER • PROTOCOLO CAPUAVA</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- TACTICAL OPERATOR DOSSIER MODAL -->
+  <div class="dossier-modal-overlay" id="dossierModal" aria-hidden="true" role="dialog">
+    <div class="dossier-modal-window">
+      <div class="dossier-modal-header">
+        <div class="dmh-left">
+          <span class="dmh-tag">ARQUIVO CLASSIFICADO // SQUAD CAPUAVA</span>
+          <h2 class="dmh-title" id="dossierPlayerName">NOME_DO_OPERADOR</h2>
+        </div>
+        <button class="dmh-close-btn" id="dossierCloseBtn" aria-label="Fechar Dossiê" data-sound="click">✕</button>
+      </div>
+
+      <div class="dossier-modal-body" id="dossierContent">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION HUD -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- SCRIPTS -->
+  <script src="app.js"></script>
+</body>
+</html>
